@@ -28,7 +28,7 @@ app.listen(port, () => console.log(`Server started on port ${port}`));
 app.get("/habits", async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute("SELECT * FROM habits ORDER BY id");
+        const [rows] = await connection.execute("SELECT * FROM defaultdb.ECOHabitTracker");
         await connection.end();
         res.json(rows);
     } catch (err) {
