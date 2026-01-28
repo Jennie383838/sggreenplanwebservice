@@ -54,8 +54,8 @@ app.post("/addhabits", async (req, res) => {
 });
 
 // PUT to update a habit
-app.put("/updatehabits", async (req, res) => {
-    const { id } = req.params;
+app.put("/updatehabits/:id", async (req, res) => {
+    const { id } = req.params;   // now this will correctly get the habit ID
     const { title, completed, points } = req.body;
 
     try {
@@ -76,6 +76,7 @@ app.put("/updatehabits", async (req, res) => {
         res.status(500).json({ message: "Server error - could not update habit" });
     }
 });
+
 
 // DELETE a habit
 app.delete("/deletehabits", async (req, res) => {
