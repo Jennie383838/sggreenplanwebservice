@@ -36,7 +36,7 @@ app.get("/habits", async (req, res) => {
 });
 
 // POST a new habit
-app.post("/habits", async (req, res) => {
+app.post("/addhabits", async (req, res) => {
     const { title, completed, points } = req.body;
 
     try {
@@ -54,7 +54,7 @@ app.post("/habits", async (req, res) => {
 });
 
 // PUT to update a habit
-app.put("/habits/:id", async (req, res) => {
+app.put("/updatehabits", async (req, res) => {
     const { id } = req.params;
     const { title, completed, points } = req.body;
 
@@ -78,7 +78,7 @@ app.put("/habits/:id", async (req, res) => {
 });
 
 // DELETE a habit
-app.delete("/habits/:id", async (req, res) => {
+app.delete("/deletehabits", async (req, res) => {
     const { id } = req.params;
 
     try {
