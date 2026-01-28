@@ -44,8 +44,8 @@ app.post("/addhabits", async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
         await connection.execute(
-            "INSERT INTO habits (title, completed, points) VALUES (?, ?, ?)",
-            [title, completed || false, points || 0]
+            "INSERT INTO habits (Eco_title, Eco_completed, Eco_points) VALUES (?, ?, ?)",
+            [title || 'Testing 1' , completed || false, points || 0]
         );
         await connection.end();
         res.status(201).json({ message: "Habit added successfully" });
@@ -63,7 +63,7 @@ app.put("/updatehabits", async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
         await connection.execute(
-            "UPDATE habits SET title = ?, completed = ?, points = ? WHERE id = ?",
+            "UPDATE habits SET Eco_title = ?, Eco_completed = ?, Eco_points = ? WHERE id = ?",
             [title, completed, points, id]
         );
         await connection.end();
