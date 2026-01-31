@@ -128,19 +128,19 @@ curl -X POST https://sggreenplanwebservice-2.onrender.com/addhabits \
 
 **List habits**
 ```bash
-curl http://sggreenplanwebservice-2.onrender.com/habits
+curl https://sggreenplanwebservice-2.onrender.com/habits
 ```
 
 **Update a habit**
 ```bash
-curl -X PUT http://sggreenplanwebservice-2.onrender.com/updatehabits/1 \
+curl -X PUT https://sggreenplanwebservice-2.onrender.com/updatehabits/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"Bring reusable bag","completed":true,"points":10}'
 ```
 
 **Delete a habit** (current body-based route)
 ```bash
-curl -X DELETE http://sggreenplanwebservice-2.onrender.com/deletehabits/1 \
+curl -X DELETE https://sggreenplanwebservice-2.onrender.com/deletehabits/1 \
   -H "Content-Type: application/json" \
   -d '{"id":1}'
 ```
