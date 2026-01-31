@@ -140,7 +140,7 @@ curl -X PUT http://sggreenplanwebservice-2.onrender.com/updatehabits/1 \
 
 **Delete a habit** (current body-based route)
 ```bash
-curl -X DELETE http://sggreenplanwebservice-2.onrender.com/deletehabits \
+curl -X DELETE http://sggreenplanwebservice-2.onrender.com/deletehabits/1 \
   -H "Content-Type: application/json" \
   -d '{"id":1}'
 ```
