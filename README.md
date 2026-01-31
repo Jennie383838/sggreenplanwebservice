@@ -73,7 +73,7 @@ DB_PORT=3306
 ---
 
 ### 4) Delete Habit
-**DELETE** `/deletehabits`
+**DELETE** `/deletehabits/:id`
 
 > Matches your current `server.js` which reads `id` from the **request body**.
 
