@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const port = process.env.PORT || 3000;
@@ -20,6 +21,18 @@ const pool = mysql.createPool(dbConfig);
 const app = express();
 
 app.use(express.json());
+
+// API Rate Limiter
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15m
+    max: 100, // 100 REQ Per IP
+    message: {
+        message: 'Too many requests from this IP, please try again later.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use(limiter);
 
 // GET all habits
 app.get("/habits", async (req, res) => {
