@@ -1,11 +1,10 @@
-// include required packages
 const express = require('express');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// database config
+
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -13,24 +12,22 @@ const dbConfig = {
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
     waitForConnections: true,
-    connectionLimit: 100,
+    connectionLimit: 15,
     queueLimit: 0,
 };
 
+const pool = mysql.createPool(dbConfig);
 const app = express();
-app.use(express.json());
 
-// ROUTES FOR HABITS
+app.use(express.json());
 
 // GET all habits
 app.get("/habits", async (req, res) => {
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute("SELECT * FROM ECOHabitTracker");
-        await connection.end();
+        const [rows] = await pool.execute("SELECT * FROM ECOHabitTracker");
         res.json(rows);
     } catch (err) {
-        console.error(err);
+        console.error("GET Error:", err);
         res.status(500).json({ message: "Server error - could not fetch habits" });
     }
 });
@@ -40,31 +37,32 @@ app.post("/addhabits", async (req, res) => {
     const { title, completed, points } = req.body;
 
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        await connection.execute(
+        await pool.execute(
             "INSERT INTO ECOHabitTracker (Eco_title, Eco_completed, Eco_points) VALUES (?, ?, ?)",
-            [title || 'Testing 1', completed ? 1 : 0, points || 0]
+            [title || 'New Habit', completed ? 1 : 0, points || 0]
         );
-        await connection.end();
         res.status(201).json({ message: "Habit added successfully" });
     } catch (err) {
-        console.error(err);
+        console.error("POST Error:", err);
         res.status(500).json({ message: "Server error - could not add habit" });
     }
 });
 
-// PUT to update a habit
+// PUT Update a habit
 app.put("/updatehabits/:id", async (req, res) => {
-    const { id } = req.params;   // now this will correctly get the habit ID
+    const { id } = req.params;
     const { title, completed, points } = req.body;
 
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute(
-            "UPDATE ECOHabitTracker SET Eco_title = ?, Eco_completed = ?, Eco_points = ? WHERE Eco_id = ?",
-            [title, completed ? 1 : 0, points, id]
+        const [result] = await pool.execute(
+            "UPDATE ECOHabitTracker SET Eco_title = IFNULL(?, Eco_title), Eco_completed = IFNULL(?, Eco_completed), Eco_points = IFNULL(?, Eco_points) WHERE Eco_id = ?",
+            [
+                title || null, 
+                completed !== undefined ? (completed ? 1 : 0) : null, 
+                points !== undefined ? points : null, 
+                id
+            ]
         );
-        await connection.end();
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Habit not found" });
@@ -72,20 +70,17 @@ app.put("/updatehabits/:id", async (req, res) => {
 
         res.json({ message: "Habit updated successfully" });
     } catch (err) {
-        console.error(err);
+        console.error("PUT Error:", err);
         res.status(500).json({ message: "Server error - could not update habit" });
     }
 });
 
-
 // DELETE a habit
-app.delete("/deletehabits", async (req, res) => {
+app.delete("/deletehabits/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute("DELETE FROM ECOHabitTracker WHERE Eco_id = ?", [id]);
-        await connection.end();
+        const [result] = await pool.execute("DELETE FROM ECOHabitTracker WHERE Eco_id = ?", [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Habit not found" });
@@ -93,12 +88,12 @@ app.delete("/deletehabits", async (req, res) => {
 
         res.json({ message: "Habit deleted successfully" });
     } catch (err) {
-        console.error(err);
+        console.error("DELETE Error:", err);
         res.status(500).json({ message: "Server error - could not delete habit" });
     }
 });
 
-// start server
+
 app.listen(port, () => {
-    console.log("Eco Habit Tracker API started on port " + port);
+    console.log(`Eco Habit Tracker API started on port ${port}`);
 });
